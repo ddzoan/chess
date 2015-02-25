@@ -46,10 +46,10 @@ end
 if __FILE__ != $PROGRAM_NAME
   # load 'chess.rb'
     $b = Board.new
-    $q = Queen.new(:white, [3, 6], $b)
-    $r = Rook.new(:white, [3, 3], $b)
-    $bish = Bishop.new(:black, [6, 3], $b)
-    $b.board[3][6] = $q
+    $q = King.new(:white, [4, 2], $b)
+    $r = Rook.new(:white, [3, 5], $b)
+    $bish = Knight.new(:black, [6, 3], $b)
+    $b.board[4][2] = $q
     $b.board[6][3] = $bish
-    $b.board[3][3] = $r
+    $b.board[3][5] = $r
 end
