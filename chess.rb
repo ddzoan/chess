@@ -52,4 +52,12 @@ if __FILE__ != $PROGRAM_NAME
     $b.board[4][2] = $q
     $b.board[6][3] = $bish
     $b.board[3][5] = $r
+    $p = Pawn.new(:white, [0,1], $b)
+    $b.board[0][1] = $p
+    $p2 = Pawn.new(:black, [0,6], $b)
+    $b.board[0][6] = $p2
+    $p3 = Pawn.new(:white, [5,2], $b)
+    $b.board[5][2] = $p3
+    $p4 = Pawn.new(:white, [0,5], $b)
+    $b.board[0][5] = $p3
 end
