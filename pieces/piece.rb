@@ -11,7 +11,7 @@ class Piece
   def valid_moves
     valid_moves = []
     potential_moves.each do |move|
-      valid << move unless move_into_check?(move)
+      valid_moves << move unless move_into_check?(move)
     end
 
     valid_moves
