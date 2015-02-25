@@ -3,17 +3,51 @@ require_relative 'pieces.rb'
 require_relative 'board.rb'
 
 class Game
+  attr_accessor :player1, :player2, :board
   def initialize(player1, player2)
     @player1, @player2 = player1, player2
-    @board = Board.new.initialize_new_game
+    @player1.color = :white
+    @player2.color = :black
+    @board = Board.new
+    @board.initialize_new_game
   end
 
-  def method_name
+  def play
+    player1_turn = true
+    current_player = player1_turn ? @player1 : @player2
+    until over?(current_player)
+      begin
+        @board.display
+        start_pos, end_pos = current_player.play_turn
+        @board.move(start_pos, end_pos)
+      rescue ArgumentError => e
+        puts e
+        retry
+      end
+      player1_turn = !player1_turn
+      current_player = player1_turn ? @player1 : @player2
+    end
 
+    @board.display
+    puts "Game Over"
+  end
+
+  def over?(current_player)
+    @board.checkmate?(current_player.color) || @board.stalemate?(current_player.color)
+  end
+
+  def self.test_game
+    dan = HumanPlayer.new('dan')
+    mike = HumanPlayer.new('mike')
+    Game.new(dan,mike)
   end
 end
 
+
+
 class HumanPlayer
+  attr_accessor :color
+
   COORDINATES = {
     'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4, 'f' => 5,
     'g' => 6, 'h' => 7, '1' => 0, '2' => 1, '3' => 2, '4' => 3,
@@ -22,16 +56,17 @@ class HumanPlayer
 
   def initialize(name)
     @name = name
+    @color = nil
   end
 
   def play_turn
     puts "Choose piece to move #{@name}: "
     start_pos = gets.chomp
     puts "Choose destination: "
-    end_pos = gets.chomp.split('')
-    start_pos[0] = COORDINATES[start_pos[0]]
-    end_pos
-
+    end_pos = gets.chomp
+    start_pos = notation_to_coord(start_pos)
+    end_pos = notation_to_coord(end_pos)
+    [start_pos, end_pos]
   end
 
   def notation_to_coord(notation)

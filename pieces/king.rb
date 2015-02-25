@@ -6,7 +6,6 @@ class King < SteppingPiece
   end
 
   def image
-    # [2654].pack('U*')
-    '+'
+    @color == :white ? "♔" : "♚"
   end
 end

@@ -4,7 +4,6 @@ class Bishop < SlidingPiece
   end
 
   def image
-    # [2657].pack('U*')
-    "B"
+    @color == :white ? "♗" : "♝"
   end
 end

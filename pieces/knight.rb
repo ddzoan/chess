@@ -6,6 +6,6 @@ class Knight < SteppingPiece
   end
 
   def image
-    'K'
+    @color == :white ? "♘" : "♞"
   end
 end

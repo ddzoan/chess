@@ -4,7 +4,6 @@ class Queen < SlidingPiece
   end
 
   def image
-    # [2655].pack('U*')
-    "Q"
+    @color == :white ? "♕" : "♛"
   end
 end

@@ -77,7 +77,7 @@ class Board
   def move(start, end_pos)
     if piece_at(start)
       piece = piece_at(start)
-      raise "Can't move in to check!" if piece.move_into_check?(end_pos)
+      raise ArgumentError.new "Can't move in to check!" if piece.move_into_check?(end_pos)
       if piece.valid_moves.include?(end_pos)
         move!(start, end_pos)
       else
@@ -155,7 +155,7 @@ class Board
   def render
     rendering = ''
     @board.transpose.reverse.each_with_index do |x, i|
-      rendering += (7 - i).to_s + "| "
+      rendering += (8 - i).to_s + "| "
       x.each do |y|
         rendering += (y ? y.image : '-') + ' '
       end

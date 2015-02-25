@@ -4,7 +4,6 @@ class Rook < SlidingPiece
   end
 
   def image
-    # [2656].pack('U*')
-    "R"
+    @color == :white ? "♖" : "♜"
   end
 end
