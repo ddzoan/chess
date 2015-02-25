@@ -6,7 +6,20 @@ class Board
 
   def initialize
     @board = Array.new(8) { Array.new(8) }
+  end
+
+  def initialize_new_game
     populate_board
+  end
+
+  def deep_dup
+    new_board = Board.new
+    @board.flatten.compact.each do |piece|
+      color = piece.color
+      x, y = piece.position
+      new_board[x][y] = piece.class.new(color, [x, y], new_board)
+    end
+    new_board
   end
 
   def self.on_board?(pos)
