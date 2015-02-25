@@ -20,7 +20,7 @@ class Pawn < Piece
     new_x += STEP[@color][0]
     new_y += STEP[@color][1]
     new_pos = [new_x, new_y]
-    if !@board.piece_at?(new_pos)
+    if !@board.piece_at(new_pos)
       potential_moves << new_pos
       if start_row?(pos)
         potential_moves += potential_step_moves(new_pos)
@@ -36,8 +36,8 @@ class Pawn < Piece
       new_x = x + offset[0]
       new_y = y + offset[1]
       new_pos = [new_x, new_y]
-
-      if @board.piece_at?(new_pos) && @board.piece_at?(new_pos).color != @color
+      next if !Board.on_board?(new_pos)
+      if @board.piece_at(new_pos) && @board.piece_at(new_pos).color != @color
         potential_moves << new_pos
       end
     end
