@@ -3,9 +3,41 @@ require_relative 'pieces.rb'
 require_relative 'board.rb'
 
 class Game
+  def initialize(player1, player2)
+    @player1, @player2 = player1, player2
+    @board = Board.new.initialize_new_game
+  end
+
+  def method_name
+
+  end
 end
 
+class HumanPlayer
+  COORDINATES = {
+    'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4, 'f' => 5,
+    'g' => 6, 'h' => 7, '1' => 0, '2' => 1, '3' => 2, '4' => 3,
+    '5' => 4, '6' => 5, '7' => 6, '8' => 7
+    }
 
+  def initialize(name)
+    @name = name
+  end
+
+  def play_turn
+    puts "Choose piece to move #{@name}: "
+    start_pos = gets.chomp
+    puts "Choose destination: "
+    end_pos = gets.chomp.split('')
+    start_pos[0] = COORDINATES[start_pos[0]]
+    end_pos
+
+  end
+
+  def notation_to_coord(notation)
+    notation.split('').map { |char| COORDINATES[char] }
+  end
+end
 
 if __FILE__ != $PROGRAM_NAME
   # load 'chess.rb'

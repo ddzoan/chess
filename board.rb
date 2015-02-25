@@ -62,6 +62,7 @@ class Board
   end
 
   def self.on_board?(pos)
+    # x, y = pos
     x = pos[0]
     y = pos[1]
     x < 8 && x >= 0 && y < 8 && y >= 0

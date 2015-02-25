@@ -1,6 +1,6 @@
 class Pawn < Piece
   CAPTURE = { white: [[1, 1], [-1, 1]], black: [[1, -1], [-1, -1]]}
-  STEP = { white: [0, 1], black: [0, -1]}
+  STEP = { white: [0, 1], black: [0, -1] }
 
   def image
     "p"
