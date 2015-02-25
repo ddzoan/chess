@@ -16,10 +16,37 @@ class Board
     new_board = Board.new
     @board.flatten.compact.each do |piece|
       color = piece.color
-      x, y = piece.position
-      new_board[x][y] = piece.class.new(color, [x, y], new_board)
+      new_pos = piece.position.dup
+      new_board.place_piece(piece.class.new(color, new_pos, new_board), new_pos)
     end
     new_board
+  end
+
+  def in_check?(color)
+    king_pos = king(color).position
+    other_color_pieces(color).each do |piece|
+      return true if piece.potential_moves.include?(king_pos)
+    end
+
+    false
+  end
+
+  def all_pieces
+    @board.flatten.compact
+  end
+
+  def other_color_pieces(color)
+    all_pieces.select { |piece| piece.color != color }
+  end
+
+  def same_color_pieces(color)
+    all_pieces.select { |piece| piece.color == color }
+  end
+
+  def king(color)
+    king = same_color_pieces(color).find { |piece| piece.color == color && piece.is_a?(King) }
+    raise "King not found" unless king
+    king
   end
 
   def self.on_board?(pos)
@@ -37,16 +64,22 @@ class Board
   def move(start, end_pos)
     if piece_at(start)
       piece = piece_at(start)
-      if piece.potential_moves.include?(end_pos)
-        place_piece(piece,end_pos)
-        piece.position = end_pos
-        remove_piece(start)
+      raise "Can't move in to check!" if piece.move_into_check?(end_pos)
+      if piece.valid_moves.include?(end_pos)
+        move!(start, end_pos)
       else
         raise ArgumentError.new "Invalid end position!"
       end
     else
       raise ArgumentError.new "Invalid starting position!"
     end
+  end
+
+  def move!(start, end_pos)
+    piece = piece_at(start)
+    place_piece(piece,end_pos)
+    piece.position = end_pos
+    remove_piece(start)
   end
 
   def remove_piece(pos)
@@ -132,7 +165,13 @@ end
 if __FILE__ != $PROGRAM_NAME
   # load 'chess.rb'
   $b = Board.new
-  $p1 = $b.piece_at([0,1])
+  $b.initialize_new_game
+  def checkmate
+    # $b.move([5, 1], [5, 2])
+    $b.move([4, 6], [4, 5])
+    $b.move([6, 1], [6, 3])
+    $b.move([3, 7], [7, 3])
+  end
   def moves(pos)
     piece = $b.piece_at(pos)
     puts "#{piece.class} has potential moves #{piece.potential_moves}"

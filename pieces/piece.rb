@@ -9,7 +9,18 @@ class Piece
   end
 
   def valid_moves
-    potential_moves
+    valid_moves = []
+    potential_moves.each do |move|
+      valid << move unless move_into_check?(move)
+    end
+
+    valid_moves
+  end
+
+  def move_into_check?(new_pos)
+    new_board = @board.deep_dup
+    new_board.move!(@position, new_pos)
+    new_board.in_check?(@color)
   end
 
   def potential_moves
