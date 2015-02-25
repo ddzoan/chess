@@ -9,6 +9,43 @@ class Board
     populate_board
   end
 
+  def self.on_board?(pos)
+    x = pos[0]
+    y = pos[1]
+    x < 8 && x >= 0 && y < 8 && y >= 0
+  end
+
+  def piece_at(pos)
+    x = pos[0]
+    y = pos[1]
+    @board[x][y]
+  end
+
+  def move(start, end_pos)
+    if piece_at(start)
+      piece = piece_at(start)
+      if piece.potential_moves.include?(end_pos)
+        place_piece(piece,end_pos)
+        piece.position = end_pos
+        remove_piece(start)
+      else
+        raise ArgumentError.new "Invalid end position!"
+      end
+    else
+      raise ArgumentError.new "Invalid starting position!"
+    end
+  end
+
+  def remove_piece(pos)
+    x, y = pos
+    @board[x][y] = nil
+  end
+
+  def place_piece(piece, pos)
+    x, y = pos
+    @board[x][y] = piece
+  end
+
   def populate_board
     populate_pawns
     populate_rooks
@@ -54,18 +91,6 @@ class Board
   def populate_queens
     @board[3][0] = Queen.new(:white, [3,0], self)
     @board[3][7] = Queen.new(:black, [3,7], self)
-  end
-
-  def self.on_board?(pos)
-    x = pos[0]
-    y = pos[1]
-    x < 8 && x >= 0 && y < 8 && y >= 0
-  end
-
-  def piece_at(pos)
-    x = pos[0]
-    y = pos[1]
-    @board[x][y]
   end
 
   def render
