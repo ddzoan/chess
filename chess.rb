@@ -82,7 +82,7 @@ class Game
   def self.test_game
     player1 = HumanPlayer.new('# 1')
     player2 = HumanPlayer.new('player 2')
-    Game.new(dan,mike)
+    Game.new(player1,player2)
   end
 
   def end_game_message
