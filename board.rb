@@ -1,5 +1,10 @@
+require 'colorize'
+
 class Board
   attr_accessor :board
+
+  BG = [:green, :red]
+  PIECE_COLOR = [:white, :black]
 
   def initialize
     @board = Array.new(8) { Array.new(8) }
@@ -77,14 +82,14 @@ class Board
   def move(start, end_pos)
     if piece_at(start)
       piece = piece_at(start)
-      raise ArgumentError.new "Can't move in to check!" if piece.move_into_check?(end_pos)
+      raise ChessError.new "Can't move in to check!" if piece.move_into_check?(end_pos)
       if piece.valid_moves.include?(end_pos)
         move!(start, end_pos)
       else
-        raise ArgumentError.new "Invalid end position!"
+        raise ChessError.new "Invalid end position!"
       end
     else
-      raise ArgumentError.new "Invalid starting position!"
+      raise ChessError.new "Invalid starting position!"
     end
   end
 
@@ -107,11 +112,7 @@ class Board
 
   def populate_board
     populate_pawns
-    populate_rooks
-    populate_knights
-    populate_bishops
-    populate_kings
-    populate_queens
+    populate_pieces
   end
 
   def populate_pawns
@@ -121,48 +122,30 @@ class Board
     end
   end
 
-  def populate_bishops
-    @board[2][0] = Bishop.new(:white, [2,0], self)
-    @board[5][0] = Bishop.new(:white, [5,0], self)
-    @board[2][7] = Bishop.new(:black, [2,7], self)
-    @board[5][7] = Bishop.new(:black, [5,7], self)
-  end
+  PIECE_ORDER = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
 
-  def populate_knights
-    @board[1][0] = Knight.new(:white, [1,0], self)
-    @board[6][0] = Knight.new(:white, [6,0], self)
-    @board[1][7] = Knight.new(:black, [1,7], self)
-    @board[6][7] = Knight.new(:black, [6,7], self)
-  end
-
-  def populate_rooks
-    @board[0][0] = Rook.new(:white, [0,0], self)
-    @board[7][0] = Rook.new(:white, [7,0], self)
-    @board[0][7] = Rook.new(:black, [0,7], self)
-    @board[7][7] = Rook.new(:black, [7,7], self)
-  end
-
-  def populate_kings
-    @board[4][0] = King.new(:white, [4,0], self)
-    @board[4][7] = King.new(:black, [4,7], self)
-  end
-
-  def populate_queens
-    @board[3][0] = Queen.new(:white, [3,0], self)
-    @board[3][7] = Queen.new(:black, [3,7], self)
+  def populate_pieces
+    8.times do |x|
+      @board[x][0] = PIECE_ORDER[x].new(:white, [x, 0], self)
+      @board[x][7] = PIECE_ORDER[x].new(:black, [x, 7], self)
+    end
   end
 
   def render
     rendering = ''
     @board.transpose.reverse.each_with_index do |x, i|
-      rendering += (8 - i).to_s + "| "
-      x.each do |y|
-        rendering += (y ? y.image : '-') + ' '
+      rendering += (8 - i).to_s
+      x.each_with_index do |y, j|
+        if y
+          white_piece = y.color == :white
+          rendering += ((y.image + ' ').colorize( :background => (i + j).even? ? BG[0] : BG[1] ).colorize(white_piece ? PIECE_COLOR[0] : PIECE_COLOR[1]))
+        else
+          rendering += "  ".colorize( :background => (i + j).even? ? BG[0] : BG[1] )
+        end
       end
       rendering += "\n"
     end
-    rendering += "_" * 18 + "\n"
-    rendering += ' | '
+    rendering += " "
     ('a'..'h').to_a.each do |letter|
       rendering += letter + ' '
     end

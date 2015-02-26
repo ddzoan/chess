@@ -2,34 +2,77 @@ require 'byebug'
 require_relative 'pieces.rb'
 require_relative 'board.rb'
 
+class ChessError < ArgumentError
+end
+
 class Game
-  attr_accessor :player1, :player2, :board
+  attr_accessor :players, :board
+
+  COORDINATES = {
+    'a' => 0,
+    'b' => 1,
+    'c' => 2,
+    'd' => 3,
+    'e' => 4,
+    'f' => 5,
+    'g' => 6,
+    'h' => 7,
+
+    '1' => 0,
+    '2' => 1,
+    '3' => 2,
+    '4' => 3,
+    '5' => 4,
+    '6' => 5,
+    '7' => 6,
+    '8' => 7
+    }
+
   def initialize(player1, player2)
-    @player1, @player2 = player1, player2
-    @player1.color = :white
-    @player2.color = :black
+    player1.color = :white
+    player2.color = :black
+    @players = [player1, player2]
     @board = Board.new
     @board.initialize_new_game
   end
 
   def play
-    player1_turn = true
-    current_player = player1_turn ? @player1 : @player2
+    error = nil
+    current_player = @players.first
     until over?(current_player)
       begin
+        system('clear')
         @board.display
-        start_pos, end_pos = current_player.play_turn
-        @board.move(start_pos, end_pos)
-      rescue ArgumentError => e
-        puts e
+        puts "\n#{error.to_s.colorize(:red)}" if error
+        puts "You are in check!" if @board.in_check?(current_player.color) # IF IN CHECK TELL USER
+        start_pos, end_pos = play_turn(current_player)
+        raise ChessError.new "That is not your piece!" if @board.piece_at(start_pos).color != current_player.color
+        @board.move(start_pos, end_pos) # CHECK MOVING THEIR OWN COLOR
+      rescue ArgumentError => error # CHECK MORE DETAILS OF USER INPUT VALIDITY
         retry
       end
-      player1_turn = !player1_turn
-      current_player = player1_turn ? @player1 : @player2
+      error = nil
+      @players.rotate!
+      current_player = @players.first
     end
 
     @board.display
-    puts "Game Over"
+    puts "#{current_player.name} can't move anymore (probably lost)" # print more detailed end of game message
+  end
+
+  def play_turn(current_player)
+    move_start = current_player.move_start
+    raise ChessError.new "Invalid start move format" unless move_start =~ /\A[a-h][1-8]\z/
+    move_start = notation_to_coord(move_start)
+    move_end = current_player.move_end
+    raise ChessError.new "Invalid end move format" unless move_end =~ /\A[a-h][1-8]\z/
+    move_end = notation_to_coord(move_end)
+
+    [move_start, move_end]
+  end
+
+  def notation_to_coord(notation)
+    notation.split('').map { |char| COORDINATES[char] }
   end
 
   def over?(current_player)
@@ -48,30 +91,22 @@ end
 class HumanPlayer
   attr_accessor :color
 
-  COORDINATES = {
-    'a' => 0, 'b' => 1, 'c' => 2, 'd' => 3, 'e' => 4, 'f' => 5,
-    'g' => 6, 'h' => 7, '1' => 0, '2' => 1, '3' => 2, '4' => 3,
-    '5' => 4, '6' => 5, '7' => 6, '8' => 7
-    }
 
   def initialize(name)
     @name = name
     @color = nil
   end
 
-  def play_turn
+  def move_start
     puts "Choose piece to move #{@name}: "
     start_pos = gets.chomp
-    puts "Choose destination: "
-    end_pos = gets.chomp
-    start_pos = notation_to_coord(start_pos)
-    end_pos = notation_to_coord(end_pos)
-    [start_pos, end_pos]
   end
 
-  def notation_to_coord(notation)
-    notation.split('').map { |char| COORDINATES[char] }
+  def move_end
+    puts "Choose destination: "
+    end_pos = gets.chomp
   end
+
 end
 
 if __FILE__ != $PROGRAM_NAME
