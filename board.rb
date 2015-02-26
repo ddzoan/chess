@@ -67,15 +67,12 @@ class Board
   end
 
   def self.on_board?(pos)
-    # x, y = pos
-    x = pos[0]
-    y = pos[1]
+    x, y = pos
     x < 8 && x >= 0 && y < 8 && y >= 0
   end
 
   def piece_at(pos)
-    x = pos[0]
-    y = pos[1]
+    x, y = pos
     @board[x][y]
   end
 

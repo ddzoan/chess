@@ -39,16 +39,17 @@ class Game
   def play
     error = nil
     current_player = @players.first
+
     until over?(current_player)
       begin
         system('clear')
         @board.display
         puts "\n#{error.to_s.colorize(:red)}" if error
-        puts "You are in check!" if @board.in_check?(current_player.color) # IF IN CHECK TELL USER
+        puts "You are in check!".colorize(:red) if @board.in_check?(current_player.color)
         start_pos, end_pos = play_turn(current_player)
         raise ChessError.new "That is not your piece!" if @board.piece_at(start_pos).color != current_player.color
-        @board.move(start_pos, end_pos) # CHECK MOVING THEIR OWN COLOR
-      rescue ArgumentError => error # CHECK MORE DETAILS OF USER INPUT VALIDITY
+        @board.move(start_pos, end_pos)
+      rescue ArgumentError => error
         retry
       end
       error = nil
@@ -56,8 +57,7 @@ class Game
       current_player = @players.first
     end
 
-    @board.display
-    puts "#{current_player.name} can't move anymore (probably lost)" # print more detailed end of game message
+    end_game_message
   end
 
   def play_turn(current_player)
@@ -80,13 +80,35 @@ class Game
   end
 
   def self.test_game
-    dan = HumanPlayer.new('dan')
-    mike = HumanPlayer.new('mike')
+    player1 = HumanPlayer.new('# 1')
+    player2 = HumanPlayer.new('player 2')
     Game.new(dan,mike)
   end
+
+  def end_game_message
+    system("clear")
+    @board.display
+    current_player = @players.first
+    if @board.checkmate?(current_player.color)
+      puts "#{current_player.name} sucks at life but mostly chess."
+    else
+      puts "STALEMATE BITCHES!!!".colorize(:red)
+    end
+  end
+
+  def self.stalemate_test # move queen to b3 to stalemate
+    player1 = HumanPlayer.new('should lose')
+    player2 = HumanPlayer.new('mr move-to-b3-to-stalemate')
+    g = Game.new(player1, player2)
+    # @players = [player2, player1]
+    g.board = Board.new
+    g.board.place_piece(King.new(:white,[0,0],g.board),[0,0])
+    g.board.place_piece(King.new(:black,[7,0],g.board),[7,0])
+    g.board.place_piece(Queen.new(:black,[1,3],g.board),[1,3])
+    g.players.rotate!
+    g
+  end
 end
-
-
 
 class HumanPlayer
   attr_accessor :color
