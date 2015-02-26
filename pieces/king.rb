@@ -6,6 +6,6 @@ class King < SteppingPiece
   end
 
   def image
-    @color == :white ? "♔" : "♚"
+    "♚"
   end
 end

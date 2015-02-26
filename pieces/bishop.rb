@@ -4,6 +4,6 @@ class Bishop < SlidingPiece
   end
 
   def image
-    @color == :white ? "♗" : "♝"
+    "♝"
   end
 end

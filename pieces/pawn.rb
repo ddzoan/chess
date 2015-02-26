@@ -3,7 +3,7 @@ class Pawn < Piece
   STEP = { white: [0, 1], black: [0, -1] }
 
   def image
-    @color == :white ? "♙" : "♟"
+    "♟"
   end
 
   def potential_moves

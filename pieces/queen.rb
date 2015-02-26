@@ -4,6 +4,6 @@ class Queen < SlidingPiece
   end
 
   def image
-    @color == :white ? "♕" : "♛"
+    "♛"
   end
 end

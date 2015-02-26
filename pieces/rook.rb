@@ -4,6 +4,6 @@ class Rook < SlidingPiece
   end
 
   def image
-    @color == :white ? "♖" : "♜"
+    "♜"
   end
 end
